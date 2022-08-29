@@ -144,7 +144,7 @@ Now open your terminal again and run this command to run the app locally:
 
 Basim Bashir - [@LinkedIn](https://www.linkedin.com/in/basim-bashir-035403214/)
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/BasimBashir/YogaPose_Classifier_APP](https://github.com/BasimBashir/YogaPose_Classifier_APP)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
