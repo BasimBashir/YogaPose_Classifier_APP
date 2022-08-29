@@ -148,3 +148,5 @@ Project Link: [https://github.com/BasimBashir/YogaPose_Classifier_APP](https://g
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+Project Deployed Link on streamlit server: [https://github.com/Basi](https://github.com/BasimBashir/YogaPose_Classifier_APP)](https://github.com/BasimBashir/YogaPose_Classifier_APP)
+
