@@ -65,6 +65,19 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
         y2, x2, c2 = shaped[p2]
 
         if (c1 > confidence_threshold) & (c2 > confidence_threshold):
+            cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 0, 0), 2)
+
+
+def draw_wrong_connections(frame, keypoints, edges, confidence_threshold):
+    y, x, c = frame.shape
+    shaped = np.squeeze(np.multiply(keypoints, [y, x, 1]))
+
+    for edge, color in edges.items():
+        p1, p2 = edge
+        y1, x1, c1 = shaped[p1]
+        y2, x2, c2 = shaped[p2]
+
+        if (c1 > confidence_threshold) & (c2 > confidence_threshold):
             cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 0, 255), 2)
 
 
@@ -220,18 +233,18 @@ elif app_mode == 'Detect on Image':
     # Predicting the results
     res = model2.predict(np.expand_dims(reshaped, axis=0))[0]
 
-    # Rendering
-    draw_connections(resized, keypoints_with_scores, EDGES, detection_confidence)
-    draw_keypoints(resized, keypoints_with_scores, detection_confidence)
-
     # Checking if the detected Keypoints are same as the classes then print Class name
     if res[np.argmax(res)] > threshold:
         # Make a h1 tag header
-        kpi1_text.write(f"<h1 style='text-align: center; color:red;'> {actions[np.argmax(res)]} </h1>",
-                        unsafe_allow_html=True)
+        kpi1_text.write(f"<h1 style='text-align: center; color:red;'> {actions[np.argmax(res)]} </h1>", unsafe_allow_html=True)
+
+        # Rendering
+        draw_connections(resized, keypoints_with_scores, EDGES, detection_confidence)
+        draw_keypoints(resized, keypoints_with_scores, detection_confidence)
     else:
-        # Make a h1 tag header
-        kpi1_text.write(f"<h1 style='text-align: center; color:red;'> {Unknown_Pose} </h1>", unsafe_allow_html=True)
+        # Rendering
+        draw_wrong_connections(resized, keypoints_with_scores, EDGES, detection_confidence)
+        draw_keypoints(resized, keypoints_with_scores, detection_confidence)
 
     # Display the Image
     st.subheader('Output Image')
@@ -325,7 +338,7 @@ elif app_mode == 'Detect on Video':
     # Pose Classification Logic
 
     # Creating columns to display fps and detections etc
-    kpi1, kpi2, kpi3 = st.columns(3)
+    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
     with kpi1:
         st.markdown("**Frame Rate**")
@@ -338,6 +351,10 @@ elif app_mode == 'Detect on Video':
     with kpi3:
         st.markdown("**Video Resolution**")
         kpi3_text = st.markdown("0")
+
+    with kpi4:
+        st.markdown("**Mis-Classified Ratio**")
+        kpi4_text = st.markdown("0")
 
     # Creating a divider line
     st.markdown("<hr/>", unsafe_allow_html=True)
@@ -381,9 +398,20 @@ elif app_mode == 'Detect on Video':
             kpi2_text.write(f"<h1 style='text-align: center; color:red;'> {actions[np.argmax(res)]} </h1>",
                             unsafe_allow_html=True)
 
-        # Rendering
-        draw_connections(frame, keypoints_with_scores, EDGES, detection_confidence)
-        draw_keypoints(frame, keypoints_with_scores, detection_confidence)
+            # Rendering
+            draw_connections(frame, keypoints_with_scores, EDGES, detection_confidence)
+            draw_keypoints(frame, keypoints_with_scores, detection_confidence)
+
+            # Mis-Classification difference
+            diff = 100 - (threshold * 100)
+            diff = round(diff)
+            kpi4_text.write(f"<h1 style='text-align: center; color:red;'> {diff} </h1>",
+                            unsafe_allow_html=True)
+
+        else:
+            # Rendering
+            draw_wrong_connections(frame, keypoints_with_scores, EDGES, detection_confidence)
+            draw_keypoints(frame, keypoints_with_scores, detection_confidence)
 
         # Fps counter logic
         currentTime = time.time()
